@@ -37,6 +37,12 @@ eg: 湿度与降雨量的关系 ，十分相关
         决策树： 信息嫡，信息增益
         正则化： L1,L2
         深度学习： 卷积等
+
+ 特征降维：主成分分析(PCA) ：压缩，删除冗余，可以创造新的特征
+            定义：高维数据转化为低维数据的过程，在此过程中可能会舍弃原有数据、创造新的变量
+            作用：是数据维数压缩，尽可能降低原数据的维数（复杂度），损失少量信息。
+            应用：回归分析或者聚类分析当中
+         
 """
 from sklearn.preprocessing import MinMaxScaler, StandardScaler
 import pandas as pd
@@ -74,7 +80,7 @@ from sklearn.feature_selection import VarianceThreshold
 
 
 def varthreshold():
-    """ 使用地方差方法过滤特征(股票指标过滤) """
+    """ 使用低方差方法过滤特征(股票指标过滤) """
 
     factor = pd.read_csv("factor_returns.csv")
     # 使用VarianceThreshold , 9列指标低方差过滤
@@ -111,12 +117,62 @@ def relations_func_personer():
     # print(stock)
 
 
-from scipy.stats import pearsonr
+from sklearn.decomposition import PCA
+
+
+def PCA_demo():
+    """
+     特征降维：主成分分析(PCA) ：压缩，删除冗余，可以创造新的特征
+            定义：高维数据转化为低维数据的过程，在此过程中可能会舍弃原有数据、创造新的变量
+            作用：是数据维数压缩，尽可能降低原数据的维数（复杂度），损失少量信息。
+            应用：回归分析或者聚类分析当中
+    """
+    import tushare as ts
+
+    # a = [[2, 8, 4, 5], [6, 3, 0, 8], [5, 4, 9, 1]]
+    # pca = PCA(n_components=0.95)  # 整数表示保留几个信息，小数表示百分之多少 一般大于95%
+    # data = pca.fit_transform(a)
+    # print(stock)
+
+    # 2个合成1个
+    stock_data = ts.get_hist_data("600015")
+    pca = PCA(n_components=1)  # 整数表示保留几个信息，小数表示百分之多少 一般大于95%
+    stock = stock_data
+    data = pca.fit_transform(stock[['open']], stock[['close']])  # 举例列不是实际的列
+    print(data)
+    pass
+
+
+def analysize():
+    # 导入4个表
+    prior = pd.read_csv("./instacart/order_products__prior.csv")
+    products = pd.read_csv("./instacart/products.csv")
+    orders = pd.read_csv("./instacart/orders.csv")
+    aisles = pd.read_csv("./instacart/aisles.csv")
+
+    # 表合并       on --> 两张表共同拥有的键,默认内连接
+    a1 = pd.merge(prior, products, on="product_id")
+    a2 = pd.merge(a1, orders, on="order_id")
+    ret = pd.merge(a2, aisles, on="aisle_id")
+    # pd.crosstab 统计用户与物品类别之间的次数关系（统计次数）
+    cs_ret = pd.crosstab(ret['user_id'], ret['aisle'])
+    print(cs_ret)
+    print(cs_ret.shape)
+    pca = PCA(n_components=0.95)  # 整数表示保留几个信息，小数表示百分之多少 一般大于95%
+    res_final = pca.fit_transform(cs_ret)
+
+    index = ["第%s个分类" % i for i in range(44)]
+    index2 = ["第%s个用户" % i for i in range(len(res_final))]
+    res_pd = pd.DataFrame(res_final, index=index2, columns=index)
+    print(res_pd)
+    pass
+
 
 if __name__ == '__main__':
 
     # minmaxscaler()
     # stardscaler()
-    relations_func_personer()
-
+    # relations_func_personer()
+    # PCA_demo()
+    analysize()
     pass
