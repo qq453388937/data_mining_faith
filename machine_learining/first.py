@@ -85,6 +85,7 @@ def fenci():
     print(data.toarray())
     """ stop_words 停止词,这些词不能反映文章主题,词语性质比较中性,因为,所以 """
 
+
 from sklearn.feature_extraction.text import TfidfVectorizer
 
 
@@ -96,22 +97,24 @@ def TfIdfvector():
         逆文档频率 idf = lg(10000000/10000)=3  lg(一千万/一万) = 3
         tfidf = 3 * 0.05 => 0.15
     """
+
     def cut_word(s1, s2, s3):
         c1 = jieba.cut(s1)
         c2 = jieba.cut(s2)
         c3 = jieba.cut(s3)
-        # print(c3)
+        print(c1)  # <generator object Tokenizer.cut at 0x10e934bf8> 生成器
         # 先将着三个转换成列表,变成以空格隔开的字符串
         ct1 = " ".join(list(c1))
         ct2 = " ".join(list(c2))
         ct3 = " ".join(list(c3))
-        # print(ct3)  # 如果 只用 一种 方式 了解 某样 事物 ， 你 就 不会 真正 了解 它 。 了解 事物 真正 含义 的 秘密 取决于 如何 将 其 与 我们 所 了解 的 事物 相 联系 。
+        print(ct1)  # 如果 只用 一种 方式 了解 某样 事物 ， 你 就 不会 真正 了解 它 。 了解 事物 真正 含义 的 秘密 取决于 如何 将 其 与 我们 所 了解 的 事物 相 联系 。
         return ct1, ct2, ct3
 
     s1 = "今天很残酷，明天更残酷，后天很美好，但绝对大部分是死在明天晚上，所以每个人不要放弃今天。"
     s2 = "我们看到的从很远星系来的光是在几百万年之前发出的，这样当我们看到宇宙时，我们是在看它的过去。"
     s3 = "如果只用一种方式了解某样事物，你就不会真正了解它。了解事物真正含义的秘密取决于如何将其与我们所了解的事物相联系。"
     ret1, ret2, ret3 = cut_word(s1, s2, s3)
+    print(ret1, ret2, ret3)
     # 实例化对象
     tfidf = TfidfVectorizer(stop_words=["不会", "不要", "绝对"])  # 对每篇文章的重要性排序,找到前N个重要词
     """ 分类机器算法前期处理方式 """
